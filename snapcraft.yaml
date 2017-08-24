@@ -7,19 +7,27 @@ description: |
   .
   This snapcraft part allows to build programs written in go.
   .
-  Usage:
-    Add "after: [go]" to your part written in go. This will use the latest go
-    from the master branch to compile your program.
-    .
-    If you want to specify a go version, also add a go part with the version as
-    the source-tag value. For example, to use go 1.7.5, use:
-      parts:
-        my-go-program:
-          ...
-          after: [go]
-        go:
-          source-tag: go1.7.5
-confinement: strict
+#  Usage:
+#    Add "after: [go]" to your part written in go. This will use the latest go
+#    from the master branch to compile your program.
+#    .
+#    If you want to specify a go version, also add a go part with the version as
+#    the source-tag value. For example, to use go 1.7.5, use:
+#      parts:
+#        my-go-program:
+#          ...
+#          after: [go]
+#        go:
+#          source-tag: go1.7.5
+
+grade: devel
+confinement: devmode
+
+apps:
+    go:
+        command: bin/go
+    hello:
+        command: bin/go run hello_world.go
 
 parts:
   go:
@@ -30,6 +38,10 @@ parts:
     build: cd src && env GOROOT_BOOTSTRAP=$(go env GOROOT | tr -d '\n') ./make.bash
     install: cp -R * $SNAPCRAFT_PART_INSTALL
     stage:
-      - 'bin'
+      - ../install
     prime:
-      - '-*'
+      - ../install
+  myfiles:
+      plugin: nil
+      organize:
+          hello_world.go : hello_world.go
